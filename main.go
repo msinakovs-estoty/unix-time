@@ -7,6 +7,7 @@ import (
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/container"
+	"fyne.io/fyne/v2/data/binding"
 	"fyne.io/fyne/v2/widget"
 )
 
@@ -16,25 +17,27 @@ func main() {
 	w.SetFixedSize(true)
 	w.Resize(fyne.NewSize(300, 100))
 
-	unixLabel := widget.NewLabelWithStyle(
-		fmt.Sprintf("%d", time.Now().Unix()),
-		fyne.TextAlignCenter,
-		fyne.TextStyle{Bold: true, Monospace: true},
-	)
+	now := time.Now()
 
-	humanLabel := widget.NewLabelWithStyle(
-		time.Now().Format("2006-01-02 15:04:05"),
-		fyne.TextAlignCenter,
-		fyne.TextStyle{Monospace: true},
-	)
+	unixBind := binding.NewString()
+	unixBind.Set(fmt.Sprintf("%d", now.Unix()))
+	unixLabel := widget.NewLabelWithData(unixBind)
+	unixLabel.Alignment = fyne.TextAlignCenter
+	unixLabel.TextStyle = fyne.TextStyle{Bold: true, Monospace: true}
+
+	humanBind := binding.NewString()
+	humanBind.Set(now.Format("2006-01-02 15:04:05"))
+	humanLabel := widget.NewLabelWithData(humanBind)
+	humanLabel.Alignment = fyne.TextAlignCenter
+	humanLabel.TextStyle = fyne.TextStyle{Monospace: true}
 
 	go func() {
 		ticker := time.NewTicker(time.Second)
 		defer ticker.Stop()
 		for range ticker.C {
-			now := time.Now()
-			unixLabel.SetText(fmt.Sprintf("%d", now.Unix()))
-			humanLabel.SetText(now.Format("2006-01-02 15:04:05"))
+			t := time.Now()
+			unixBind.Set(fmt.Sprintf("%d", t.Unix()))
+			humanBind.Set(t.Format("2006-01-02 15:04:05"))
 		}
 	}()
 
