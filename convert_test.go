@@ -2,6 +2,7 @@ package main
 
 import (
 	"testing"
+	"time"
 )
 
 func TestUnixToDate_invalid(t *testing.T) {
@@ -14,13 +15,16 @@ func TestUnixToDate_invalid(t *testing.T) {
 }
 
 func TestUnixToDate_valid(t *testing.T) {
-	if got := unixToDate("1000000000"); got != "2001-09-09 01:46:40" {
-		t.Errorf("got %q, want %q", got, "2001-09-09 01:46:40")
+	got := unixToDate("1000000000")
+	want := time.Unix(1000000000, 0).Local().Format("2006-01-02 15:04:05")
+	if got != want {
+		t.Errorf("got %q, want %q", got, want)
 	}
 }
 
 func TestDateToUnix_roundtrip(t *testing.T) {
-	if got := dateToUnix("2001-09-09 01:46:40"); got != "1000000000" {
+	date := time.Unix(1000000000, 0).Local().Format("2006-01-02 15:04:05")
+	if got := dateToUnix(date); got != "1000000000" {
 		t.Errorf("got %q, want %q", got, "1000000000")
 	}
 }
