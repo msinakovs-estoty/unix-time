@@ -1,6 +1,7 @@
 package main
 
 import (
+	_ "embed"
 	"fmt"
 	"time"
 
@@ -10,6 +11,9 @@ import (
 	"fyne.io/fyne/v2/data/binding"
 	"fyne.io/fyne/v2/widget"
 )
+
+//go:embed icon.svg
+var iconBytes []byte
 
 func makeMainTab() *container.TabItem {
 	now := time.Now()
@@ -36,11 +40,11 @@ func makeMainTab() *container.TabItem {
 		}
 	}()
 
-	return container.NewTabItem("Main", container.NewPadded(container.NewVBox(unixLabel, humanLabel)))
+	return container.NewTabItem("Main", container.NewVBox(unixLabel, humanLabel))
 }
 
 func makeConverterTab() *container.TabItem {
-	resultLabel := widget.NewLabel("")
+	resultLabel := widget.NewLabel("—")
 	resultLabel.Alignment = fyne.TextAlignCenter
 	resultLabel.TextStyle = fyne.TextStyle{Monospace: true}
 
@@ -51,7 +55,7 @@ func makeConverterTab() *container.TabItem {
 
 	entry.OnChanged = func(s string) {
 		if s == "" {
-			resultLabel.SetText("")
+			resultLabel.SetText("—")
 			return
 		}
 		if direction == "Unix → Date" {
@@ -64,23 +68,22 @@ func makeConverterTab() *container.TabItem {
 	radio := widget.NewRadioGroup([]string{"Unix → Date", "Date → Unix"}, func(selected string) {
 		direction = selected
 		entry.SetText("")
-		resultLabel.SetText("")
+		resultLabel.SetText("—")
 	})
 	radio.SetSelected("Unix → Date")
 	radio.Horizontal = true
 
-	return container.NewTabItem("Converter", container.NewPadded(container.NewVBox(radio, entry, resultLabel)))
+	return container.NewTabItem("Converter", container.NewVBox(radio, entry, resultLabel))
 }
 
 func main() {
 	a := app.New()
+	a.SetIcon(fyne.NewStaticResource("icon.svg", iconBytes))
 	w := a.NewWindow("Timer")
-	w.SetFixedSize(true)
-	w.Resize(fyne.NewSize(300, 180))
-
 	w.SetContent(container.NewAppTabs(
 		makeMainTab(),
 		makeConverterTab(),
 	))
+	w.Resize(fyne.NewSize(300, 130))
 	w.ShowAndRun()
 }
