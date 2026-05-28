@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"testing"
 )
 
@@ -15,21 +14,14 @@ func TestUnixToDate_invalid(t *testing.T) {
 }
 
 func TestUnixToDate_valid(t *testing.T) {
-	if got := unixToDate("1000000000"); got == "invalid input" {
-		t.Errorf("unixToDate(1000000000) = %q, expected a valid date string", got)
+	if got := unixToDate("1000000000"); got != "2001-09-09 01:46:40" {
+		t.Errorf("got %q, want %q", got, "2001-09-09 01:46:40")
 	}
 }
 
 func TestDateToUnix_roundtrip(t *testing.T) {
-	ts := int64(1000000000)
-	date := unixToDate(fmt.Sprintf("%d", ts))
-	if date == "invalid input" {
-		t.Fatalf("unixToDate(%d) unexpectedly returned invalid input", ts)
-	}
-	got := dateToUnix(date)
-	want := fmt.Sprintf("%d", ts)
-	if got != want {
-		t.Errorf("round-trip: got %q, want %q", got, want)
+	if got := dateToUnix("2001-09-09 01:46:40"); got != "1000000000" {
+		t.Errorf("got %q, want %q", got, "1000000000")
 	}
 }
 
